@@ -24,7 +24,7 @@ function BookList() {
 
   return (
     <div>
-      <div className='flex flex-wrap justify-center gap-4 sm:gap-8 my-10 relative'>
+      <div className='flex flex-wrap justify-center gap-4 sm:gap-8 my-12 max-sm:p-3 relative'>
         {bookGenre.map((item)=>(
             <div key={item} className='relative'>
                 <button onClick={()=>setMenu(item)} className={`cursor-pointer text-gray-500 ${menu === item && 'text-white px-4 pt-0.5'}`}>
