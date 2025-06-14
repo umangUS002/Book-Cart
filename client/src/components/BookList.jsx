@@ -24,7 +24,7 @@ function BookList() {
 
   return (
     <div>
-      <div className='flex flex-wrap justify-center gap-4 sm:gap-8 my-12 max-sm:p-3 relative'>
+      <div className='flex flex-wrap justify-center gap-4 max-sm:gap-3 sm:gap-8 my-10 max-sm:my-7 max-sm:p-3 relative'>
         {bookGenre.map((item)=>(
             <div key={item} className='relative'>
                 <button onClick={()=>setMenu(item)} className={`cursor-pointer text-gray-500 ${menu === item && 'text-white px-4 pt-0.5'}`}>
@@ -38,7 +38,7 @@ function BookList() {
             </div>
         ))}
       </div>
-      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-4 gap-14 max-sm:gap-8 mb-28 mx-8 sm:mx-16 xl:mx-40'>
+      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-4 gap-14 max-sm:gap-5 mb-28 mx-8 sm:mx-16 xl:mx-40'>
         {filteredBooks().filter((book) => menu === "All" ? true : book.genre === menu).
         map((book) => book && <BookCard key={book._id} blog={book} /> )}
       </div>
