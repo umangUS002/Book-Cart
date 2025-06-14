@@ -7,7 +7,7 @@ function Navbar() {
     const {navigate, token} = useAppContext();
 
   return (
-    <div className='flex justify-between items-center mx-8 sm:mx-20 xl:mx-32 cursor pointer'>
+    <div className='flex  justify-between items-center px-8 sm:px-20 xl:px-32 cursor pointer shadow max-sm:py-2'>
         <div className='flex -ml-4'>
             <img onClick={()=> navigate('/')} src={assets.logo} className='h-16 max-sm:h-10 max-sm:w-12 w-18 cursor-pointer mt-3 max-sm:mt-2.5 mr-2' />
             <h1 onClick={()=> navigate('/')} className='mt-6 max-sm:mt-4 -ml-3 font-bold text-3xl max-sm:text-xl text-primary cursor-pointer'>Book Cart</h1>
