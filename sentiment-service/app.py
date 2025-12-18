@@ -1,33 +1,74 @@
-# sentiment-service/app.py
 from fastapi import FastAPI
-from pydantic import BaseModel
-from transformers import pipeline
+from pymongo import MongoClient
+from bson import ObjectId
+import numpy as np
 
-# Make sure this variable is named exactly "app"
-app = FastAPI(title="Sentiment Service")
+# ================== APP ==================
+app = FastAPI(title="AI Review Analysis Service")
 
-# instantiate the HF pipeline at module import (may download weights on first run)
-# NOTE: transformers will try to use torch. If torch isn't installed you'll see an error.
-sentiment_model = pipeline("sentiment-analysis")
+# ================== DB CONFIG ==================
+MONGO_URI = "mongodb+srv://umang:umang123@cluster0.uefjr9a.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+DB_NAME = "test"
 
-class Payload(BaseModel):
-    text: str
+BOOKS_COLLECTION = "books"
+COMMENTS_COLLECTION = "comments"
+INTERACTIONS_COLLECTION = "interactions"
 
-def map_label_to_score(label: str, score: float):
-    # convert POSITIVE/NEGATIVE into a signed score and map to categories
-    s = score if label.upper().startswith("POS") else -score
-    if s >= 0.6:
-        cat = "excellent"
-    elif s >= 0.2:
-        cat = "good"
-    elif s <= -0.2:
-        cat = "poor"
-    else:
-        cat = "avg"
-    return {"score": float(s), "label": cat}
+# ================== DB CONNECTION ==================
+client = MongoClient(MONGO_URI)
+db = client[DB_NAME]
 
-@app.post("/analyze")
-def analyze(p: Payload):
-    # truncate long text to avoid extremely long model inputs
-    out = sentiment_model(p.text[:512])
-    return map_label_to_score(out[0]["label"], out[0]["score"])
+books_col = db[BOOKS_COLLECTION]
+comments_col = db[COMMENTS_COLLECTION]
+interactions_col = db[INTERACTIONS_COLLECTION]
+
+# ================== DEBUG CHECK ==================
+print("Connected DB:", db.name)
+print("Collections:", db.list_collection_names())
+print("TOTAL COMMENTS:", comments_col.count_documents({}))
+
+
+# ================== API ==================
+@app.get("/analyze/book/{book_id}")
+def analyze_book(book_id: str):
+
+    # Validate ObjectId
+    try:
+        book_oid = ObjectId(book_id)
+    except Exception:
+        return {"error": "Invalid book_id format"}
+
+    comments = list(comments_col.find({
+        "book": book_oid,
+        "isApproved": True,
+        "sentiment.score": {"$exists": True}
+    }))
+
+    if not comments:
+        return {
+            "rating": 0,
+            "totalReviews": 0,
+            "summary": "No reviews available yet."
+        }
+
+    scores = np.array([c["sentiment"]["score"] for c in comments])
+
+    avg_score = float(np.mean(scores))
+    std_dev = float(np.std(scores))
+
+    # ML-based star mapping (continuous → discrete)
+    stars = round(((avg_score + 1) / 2) * 4 + 1, 1)
+
+    summary = (
+        f"Based on {len(scores)} customer reviews, customers find this product excellent overall."
+        if avg_score > 0.5
+        else "Customer opinions are mixed."
+    )
+
+    return {
+        "rating": stars,
+        "avgSentiment": round(avg_score, 3),
+        "confidence": round(1 - std_dev, 2),
+        "totalReviews": len(scores),
+        "summary": summary
+    }

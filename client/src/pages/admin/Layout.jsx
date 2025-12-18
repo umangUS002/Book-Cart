@@ -3,6 +3,7 @@ import { assets } from '../../assets/assets'
 import { Outlet, useNavigate } from 'react-router-dom';
 import SideBar from '../../components/admin/SideBar';
 import { useAppContext } from '../../context/AppContext';
+import toast from 'react-hot-toast';
 
 function Layout() {
 

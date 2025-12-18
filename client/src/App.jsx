@@ -20,6 +20,7 @@ function App() {
       <Routes>
         <Route path='/' element={<HomePage/>}/>
         <Route path='/book/:id' element={<BookDetails/>}/>
+        <Route path='/login' element={<Login/>}/>
         <Route path='/admin' element={token ? <Layout/> : <Login/>}>
           <Route index element={<DashBoard/>}/>
           <Route path='addBlog' element={<AddBooks/>}/>

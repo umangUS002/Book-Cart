@@ -14,7 +14,7 @@ function BlogDetails() {
 
   const { id } = useParams();
 
-  const { api, similarBooks, fetchSimilarBooks } = useAppContext();
+  const { axios, similarBooks, fetchSimilarBooks } = useAppContext();
 
   const [data, setData] = useState(null);
   const [comments, setComments] = useState([]);
@@ -23,7 +23,7 @@ function BlogDetails() {
 
   const fetchBlogData = async () => {
     try {
-      const { data } = await api.get(`/api/book/${id}`);
+      const { data } = await axios.get(`/api/book/${id}`);
       data.success ? setData(data.book) : toast.error(data.message)
     } catch (error) {
       toast.error(error.message)
@@ -32,7 +32,7 @@ function BlogDetails() {
 
   const fetchComments = async () => {
     try {
-      const { data } = await api.post('/api/book/comments', { bookId: id })
+      const { data } = await axios.post('/api/book/comments', { bookId: id })
       if (data.success) {
         setComments(data.comments);
       } else {
@@ -46,7 +46,7 @@ function BlogDetails() {
   const addComment = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await api.post('/api/book/add-comment', { book: id, name, content })
+      const { data } = await axios.post('/api/book/add-comment', { book: id, name, content })
       if (data.success) {
         toast.success(data.message);
         setName('');

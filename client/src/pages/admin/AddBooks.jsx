@@ -75,7 +75,7 @@ const AddBlog = () => {
     formData.append('book', JSON.stringify(book));
     formData.append('image', image);
 
-    const { data } = await axios.post('/api/book/add', formData);
+    const { data } = await api.post('/api/book/add', formData);
 
     if (data.success) {
       toast.success(data.message);

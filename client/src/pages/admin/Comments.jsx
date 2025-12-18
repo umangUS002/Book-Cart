@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import CommentTableItem from '../../components/admin/CommentTableItem';
 import { useAppContext } from '../../context/AppContext';
+import toast from 'react-hot-toast';
 
 function Comments() {
 
@@ -14,7 +15,8 @@ function Comments() {
       const {data} = await axios.get('/api/admin/comments');
       data.success ? setComments(data.comments) : toast.error(data.message)
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error.message);
+      console.log(error.message);
     }
   }
 

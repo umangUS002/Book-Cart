@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import BookTableItem from '../../components/admin/BookTableItem';
 import { useAppContext } from '../../context/AppContext';
+import toast from 'react-hot-toast';
 
 function ListBooks() {
 
@@ -14,9 +15,11 @@ function ListBooks() {
         setBooks(data.books);
       } else {
         toast.error(data.message);
+        console.log(error.message);
       }
     } catch (error) {
         toast.error(error.message);
+        console.log(error.message);
     }
   }
 

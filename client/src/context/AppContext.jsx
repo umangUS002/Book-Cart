@@ -22,10 +22,7 @@ export const AppProvider = ({ children }) => {
 
   // Create axios instance that sends cookies (refresh token)
   const API_BASE = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
-  const api = axios.create({
-    baseURL: API_BASE,
-    withCredentials: true, // IMPORTANT for refresh cookie
-  });
+  axios.defaults.baseURL = import.meta.env.VITE_BASE_URL
 
   // const refreshApi = axios.create({
   //   baseURL: API_BASE,
@@ -66,7 +63,7 @@ export const AppProvider = ({ children }) => {
   // --- AUTH helpers ---
   const login = async (email, password) => {
     try {
-      const { data } = await api.post("/api/auth/login", { email, password });
+      const { data } = await axios.post("/api/auth/login", { email, password });
       const newToken = data?.accessToken;
       if (newToken) {
         setToken(newToken);
@@ -84,7 +81,7 @@ export const AppProvider = ({ children }) => {
 
   const signup = async (name, email, password) => {
     try {
-      const { data } = await api.post("/api/auth/signup", { name, email, password });
+      const { data } = await axios.post("/api/auth/signup", { name, email, password });
       const newToken = data?.accessToken;
       if (newToken) {
         setToken(newToken);
@@ -102,7 +99,7 @@ export const AppProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await api.post("/api/auth/logout");
+      await axios.post("/api/auth/logout");
     } catch (e) {
       // ignore network errors on logout
     } finally {
@@ -124,7 +121,7 @@ export const AppProvider = ({ children }) => {
   // --- BOOKS / SIMILAR ---
   const fetchBooks = async () => {
     try {
-      const { data } = await api.get("/api/book/all");
+      const { data } = await axios.get("/api/book/all");
       if (data?.success) setBooks(data.books);
       else toast.error(data?.message || "Failed to load books");
     } catch (error) {
@@ -138,7 +135,7 @@ export const AppProvider = ({ children }) => {
       // try /api/recommendations/book/:bookId (recommender proxy)
       let resp;
       try {
-        resp = await api.get(`/api/recommendations/book/${bookId}`);
+        resp = await axios.get(`/api/recommendations/book/${bookId}`);
         // if the recommender returns raw books (array) use it
         if (Array.isArray(resp.data)) {
           setSimilarBooks(resp.data);
@@ -149,7 +146,7 @@ export const AppProvider = ({ children }) => {
       }
 
       // fallback to existing endpoint you had in the app
-      const fallback = await api.get(`/api/book/similar-books/${bookId}`);
+      const fallback = await axios.get(`/api/book/similar-books/${bookId}`);
       const payload = fallback.data;
       if (payload?.success) setSimilarBooks(payload.similarBooks || []);
       else toast.error(payload?.message || "No similar books found");
@@ -161,7 +158,7 @@ export const AppProvider = ({ children }) => {
   // --- WISHLIST ---
   const getWishlist = async () => {
     try {
-      const { data } = await api.get("/api/wishlist");
+      const { data } = await axios.get("/api/wishlist");
       setWishlist(Array.isArray(data) ? data : []);
       return data;
     } catch (err) {
@@ -172,7 +169,7 @@ export const AppProvider = ({ children }) => {
 
   const addToWishlist = async (bookId) => {
     try {
-      const { data } = await api.post("/api/wishlist", { bookId });
+      const { data } = await axios.post("/api/wishlist", { bookId });
       toast.success("Added to wishlist");
       // refresh local wishlist
       await getWishlist();
@@ -185,7 +182,7 @@ export const AppProvider = ({ children }) => {
 
   const removeFromWishlist = async (bookId) => {
     try {
-      await api.delete(`/api/wishlist/${bookId}`);
+      await axios.delete(`/api/wishlist/${bookId}`);
       toast.success("Removed from wishlist");
       await getWishlist();
     } catch (err) {
@@ -197,7 +194,7 @@ export const AppProvider = ({ children }) => {
   // --- COMMENTS (creates comment via server which will call sentiment microservice) ---
   const postComment = async (bookId, text, rating = null) => {
     try {
-      const { data } = await api.post(`/api/books/${bookId}/comments`, { text, rating });
+      const { data } = await axios.post(`/api/books/${bookId}/comments`, { text, rating });
       toast.success("Comment posted");
       return data;
     } catch (err) {
@@ -209,7 +206,7 @@ export const AppProvider = ({ children }) => {
   // --- RECOMMENDATIONS ---
   const getRecommendations = async () => {
     try {
-      const { data } = await api.get(`/api/recommendations`);
+      const { data } = await axios.get(`/api/recommendations`);
       setRecommendations(Array.isArray(data) ? data : []);
       return data;
     } catch (err) {
@@ -219,32 +216,18 @@ export const AppProvider = ({ children }) => {
   };
 
   // --- INIT / EFFECTS ---
-  useEffect(() => {
-    // initial load of books & attempt to restore token from localStorage (your existing behavior)
-    fetchBooks();
-
-    const localToken = localStorage.getItem("token");
-    if (localToken) {
-      // if you persisted token earlier, set it in-memory (still better to rely on /refresh)
-      setToken(localToken);
-      setPersistToken(localToken);
-    }
-    // optionally load wishlist & recommendations on mount if user is logged
-    (async () => {
-      try {
-        if (localToken) {
-          await getWishlist();
-          await getRecommendations();
+  useEffect(()=>{
+        fetchBooks();
+        const token = localStorage.getItem('token')
+        if(token){
+            setToken(token);
+            axios.defaults.headers.common['Authorization'] = `${token}`;
         }
-      } catch (e) {
-        // ignore
-      }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    },[])
 
   const value = {
-    api, // raw axios instance if you need it directly
+
+    axios, // raw axios instance if you need it directly
     navigate,
     token,
     setToken,
@@ -258,9 +241,9 @@ export const AppProvider = ({ children }) => {
     fetchSimilarBooks,
 
     // auth
-    login,
-    signup,
-    logout,
+    // login,
+    // signup,
+    // logout,
 
     // wishlist
     wishlist,

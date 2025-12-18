@@ -16,7 +16,7 @@ const StarRating = ({ rating }) => {
 return (
     <div className="flex items-center gap-1 justify-center mt-2 mb-2">
       {stars}
-      <span className="text-sm max-sm:text-xs text-gray-700 font-medium ml-1">{rating.toFixed(1)}</span>
+      <span className="text-sm max-sm:text-xs text-gray-700 font-medium ml-1">{(rating ?? 0).toFixed(1)}</span>
     </div>
   );
   
