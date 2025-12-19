@@ -4,4 +4,4 @@ scikit-learn
 pandas
 numpy
 joblib
-pymongo
+pymongo[srv]

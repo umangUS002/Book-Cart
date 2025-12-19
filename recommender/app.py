@@ -12,7 +12,10 @@ import joblib
 # =======================
 # CONFIG
 # =======================
-MONGO_URI = "mongodb+srv://umang:umang123@cluster0.uefjr9a.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+MONGO_URI = os.getenv("MONGO_URI")
+if not MONGO_URI:
+    raise RuntimeError("MONGO_URI not set")
+
 DB_NAME = "test"
 BOOKS_COLLECTION = "books"
 INTERACTIONS_COLLECTION = "interactions"
