@@ -13,16 +13,32 @@ const app = express();
 await connectDB();
 
 // Middlewares
-app.use(
-  cors({
-    origin: process.env.CLIENT_ORIGIN || "http://localhost:5173", // React dev server
-    credentials: true,               // ALLOW cookies
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-app.use(express.json());
+const allowedOrigins = process.env.CLIENT_ORIGIN
+  ? process.env.CLIENT_ORIGIN.split(",")
+  : [];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // allow server-to-server & Postman
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(
+      new Error(`CORS blocked for origin: ${origin}`)
+    );
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
+// IMPORTANT for preflight
 app.options("*", cors());
+
+app.use(express.json());
 
 //Routes
 app.get('/',(req,res)=> res.send("API is working"));
