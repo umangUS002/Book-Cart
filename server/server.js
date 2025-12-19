@@ -15,13 +15,14 @@ await connectDB();
 // Middlewares
 app.use(
   cors({
-    origin: "http://localhost:5173", // React dev server
+    origin: process.env.CLIENT_ORIGIN || "http://localhost:5173", // React dev server
     credentials: true,               // ALLOW cookies
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 app.use(express.json());
+app.options("*", cors());
 
 //Routes
 app.get('/',(req,res)=> res.send("API is working"));
