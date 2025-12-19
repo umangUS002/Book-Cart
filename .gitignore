@@ -1,10 +1,22 @@
-node_modules
+# Node
+node_modules/
+
+# Environment
 .env
 
-# Python virtual environment
+# Python virtual environments
 .venv/
-sentiment-service/.venv/
+**/.venv/
 
 # Python cache
 __pycache__/
+**/__pycache__/
 *.pyc
+
+# ML artifacts
+*.joblib
+
+# Build outputs
+dist/
+build/
+.next/
