@@ -2,9 +2,17 @@ from fastapi import FastAPI
 from pymongo import MongoClient
 from bson import ObjectId
 import numpy as np
+from fastapi.middleware.cors import CORSMiddleware
 
 # ================== APP ==================
 app = FastAPI(title="AI Review Analysis Service")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # later restrict to your Vercel domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ================== DB CONFIG ==================
 MONGO_URI = "mongodb+srv://umang:umang123@cluster0.uefjr9a.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"

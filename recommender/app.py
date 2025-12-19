@@ -16,6 +16,8 @@ MONGO_URI = os.getenv("MONGO_URI")
 if not MONGO_URI:
     raise RuntimeError("MONGO_URI not set")
 
+from fastapi.middleware.cors import CORSMiddleware
+
 DB_NAME = "test"
 BOOKS_COLLECTION = "books"
 INTERACTIONS_COLLECTION = "interactions"
@@ -36,6 +38,13 @@ interactions_col = db[INTERACTIONS_COLLECTION]
 # FASTAPI APP
 # =======================
 app = FastAPI(title="MongoDB TF-IDF Recommender")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # later restrict to your Vercel domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # =======================
 # HELPERS
