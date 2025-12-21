@@ -1,40 +1,52 @@
 import Comment from "../models/Comment.js";
 import axios from "axios";
-
+import { recomputeBookRating } from "../utils/recomputeBookRating.js";
 /**
  * POST /api/books/:bookId/comments
  * creates a comment and calls sentiment service (if configured)
  */
-export async function postComment(req, res) {
-  try {
-    const { bookId } = req.params;
-    const { text, rating } = req.body;
-    if (!text) return res.status(400).json({ message: "Missing text" });
 
-    let sentiment = null;
-    if (process.env.SENTIMENT_URL) {
-      try {
-        const resp = await axios.post(`${process.env.SENTIMENT_URL}/analyze`, { text });
-        sentiment = resp.data;
-      } catch (err) {
-        console.warn("sentiment service failed:", err.message);
-      }
+export const approveCommentById = async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    let comment = await Comment.findById(id);
+    if (!comment) {
+      return res.status(404).json({
+        success: false,
+        message: "Comment not found"
+      });
     }
 
-    const comment = await Comment.create({
-      bookId,
-      userId: req.user.id,
-      text,
-      rating,
-      sentiment
+    // 🔥 Ensure sentiment exists
+    if (!comment.sentiment || comment.sentiment.score === undefined) {
+      const resp = await axios.post(
+        `${process.env.SENTIMENT_URL}/analyze/comment`,
+        { text: comment.content }
+      );
+      comment.sentiment = resp.data.sentiment;
+    }
+
+    comment.isApproved = true;
+    await comment.save();
+
+    // 🔥 Recompute book rating
+    await recomputeBookRating(comment.book);
+
+    res.json({
+      success: true,
+      message: "Comment approved & rating updated"
     });
 
-    return res.status(201).json(comment);
-  } catch (err) {
-    console.error("postComment err:", err);
-    return res.status(500).json({ message: "Server error" });
+  } catch (error) {
+    console.error("approveCommentById:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
-}
+};
+
 
 /**
  * GET /api/books/:bookId/comments

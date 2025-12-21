@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken";
 import Book from "../models/book.js";
 import Comment from "../models/Comments.js";
+import { recomputeBookRating } from "../utils/recomputeBookRating.js";
+import axios from "axios";
 
 export const adminLogin = async(req, res) => {
     try {
@@ -65,12 +67,38 @@ export const deleteCommentById = async(req, res) => {
     }
 }
 
-export const approveCommentById = async(req, res) => {
-    try {
-        const {id} = req.body;
-        await Comment.findByIdAndUpdate(id, {isApproved: true});
-        res.json({success: true, message: "Comment approved successfully"})
-    } catch (error) {
-        res.json({success: false, message: error.message});
+
+export const approveCommentById = async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    let comment = await Comment.findById(id);
+    if (!comment) {
+      return res.status(404).json({ success: false, message: "Comment not found" });
     }
-}
+
+    // 🔥 Ensure sentiment exists
+    if (!comment.sentiment || comment.sentiment.score === undefined) {
+      const resp = await axios.post(
+        `${process.env.SENTIMENT_URL}/analyze/comment`,
+        { text: comment.content }
+      );
+      comment.sentiment = resp.data.sentiment;
+    }
+
+    comment.isApproved = true;
+    await comment.save();
+
+    // 🔥 Update rating
+    await recomputeBookRating(comment.book);
+
+    res.json({
+      success: true,
+      message: "Comment approved & rating updated"
+    });
+  } catch (error) {
+    console.error("approveCommentById:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+

@@ -8,13 +8,18 @@ from pymongo import MongoClient
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 import joblib
+from dotenv import load_dotenv
 
 # =======================
 # CONFIG
 # =======================
+
+load_dotenv()  # <-- MUST be before getenv
 MONGO_URI = os.getenv("MONGO_URI")
+
 if not MONGO_URI:
     raise RuntimeError("MONGO_URI not set")
+
 
 from fastapi.middleware.cors import CORSMiddleware
 

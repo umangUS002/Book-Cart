@@ -5,3 +5,8 @@ torch
 pydantic
 pymongo[srv]
 dnspython
+
+python-dotenv
+transformers
+torch
+numpy

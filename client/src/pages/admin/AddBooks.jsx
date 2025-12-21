@@ -75,7 +75,7 @@ const AddBlog = () => {
     formData.append('book', JSON.stringify(book));
     formData.append('image', image);
 
-    const { data } = await api.post('/api/book/add', formData);
+    const { data } = await axios.post('/api/book/add', formData);
 
     if (data.success) {
       toast.success(data.message);
@@ -149,7 +149,7 @@ const AddBlog = () => {
                 <p className='mt-4'>Publisher</p>
                 <input type='text' placeholder='Type Here' required className='w-full max-w-lg m-2 p-2 border border-gray-300 outline-none rounded' onChange={e => setPublisher(e.target.value)} value={publisher} />
                 <p className='mt-4'>Rating</p>
-                <input type='number' placeholder='Type Here' required className='w-full max-w-lg m-2 p-2 border border-gray-300 outline-none rounded' onChange={e => setRating(e.target.value)} value={rating} />
+                <input type='number' placeholder='Type Here' className='w-full max-w-lg m-2 p-2 border border-gray-300 outline-none rounded' onChange={e => setRating(e.target.value)} value={rating} />
             </div>
             <p className='mt-4'>Published Date</p>  
             <input type='date' placeholder='Type Here' required className='w-full max-w-lg m-2 p-2 border border-gray-300 outline-none rounded' onChange={e => setPublishedDate(e.target.value)} value={publishedDate} />          

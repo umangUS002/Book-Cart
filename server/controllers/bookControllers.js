@@ -10,7 +10,7 @@ export const addBook = async(req,res) => {
         const imageFile  = req.file;
 
         //Check if all fields are present
-        if(!title || !author || !genre || !publishedDate || !isbn || !publisher  || !language || !rating || !description || !imageFile){
+        if(!title || !author || !genre || !publishedDate || !isbn || !publisher  || !language || !description || !imageFile){
             return res.json({success: false, message: "Missing required fields."})
         }
 
