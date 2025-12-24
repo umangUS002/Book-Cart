@@ -10,10 +10,13 @@ import AddBooks from './pages/admin/AddBooks';
 import ListBooks from './pages/admin/ListBooks';
 import Comments from './pages/admin/Comments';
 import 'quill/dist/quill.snow.css'
+import UserLayout from './pages/user/UserLayout';
+import Recommend from './pages/user/Recommend';
+import Wishlist from './pages/user/Wishlist';
 
 function App() {
 
-  const {token} = useAppContext();
+  const {token, userToken} = useAppContext();
   return (
     <div className='app'>
       <Toaster/>
@@ -26,6 +29,11 @@ function App() {
           <Route path='addBlog' element={<AddBooks/>}/>
           <Route path='listBlog' element={<ListBooks/>}/>
           <Route path='comments' element={<Comments/>}/>
+        </Route>
+
+        <Route path='/user' element={userToken ? <UserLayout/> : <Login/>}>
+          <Route index element={<Wishlist/>}/>
+          <Route path='recommended' element={<Recommend/>}/>
         </Route>
       </Routes>
     </div>

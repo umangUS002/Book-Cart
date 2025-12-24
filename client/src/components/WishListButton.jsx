@@ -1,19 +1,37 @@
 import React, { useState, useContext } from 'react';
-import { API } from '../api';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAppContext } from '../context/AppContext';
 
 export default function WishlistButton({ bookId, initial=false }){
-  const [added,setAdded]=useState(initial);
-  const { user } = useContext(AuthContext);
-  async function toggle(){
-    if(!user) return alert('Login first');
-    if(!added){
-      setAdded(true);
-      try{ await API.post('/wishlist', { bookId }); } catch(e){ setAdded(false); }
-    } else {
+  const [added, setAdded]=useState(initial);
+  const { userToken, axios } = useAppContext();
+
+  async function toggle(e){
+  e.preventDefault();
+  e.stopPropagation();
+
+  if(!userToken) return alert('Login first');
+
+  if(!added){
+    setAdded(true);
+    try {
+      await axios.post('/api/wishlist', { bookId });
+    } catch(e){
       setAdded(false);
-      try{ await API.delete(`/wishlist/${bookId}`); } catch(e){ setAdded(true); }
+    }
+  } else {
+    setAdded(false);
+    try {
+      await axios.delete(`/api/wishlist/${bookId}`);
+    } catch(e){
+      setAdded(true);
     }
   }
-  return <button onClick={toggle}>{added? '♥':'♡'}</button>;
+}
+
+  return (
+  <button onClick={toggle}>
+    {added ? '♥' : '♡'}
+  </button>
+);
+
 }

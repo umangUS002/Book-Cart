@@ -7,6 +7,8 @@ import cors from 'cors';
 import authRouter from "./routes/authRoutes.js";
 import wishlistRouter from "./routes/wishlistRoutes.js";
 import recRouter from "./routes/recommendationRoutes.js";
+import clerkWebhooks from "./controllers/webhooks.js";
+import { clerkMiddleware } from '@clerk/express';
 
 const app = express();
 
@@ -22,12 +24,17 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(clerkMiddleware());
+
+
 
 //Routes
 app.get('/',(req,res)=> res.send("API is working"));
+
+app.post('/webhooks', clerkWebhooks);
+
 app.use('/api/book', bookRouter);
 app.use('/api/admin', adminRouter);
-
 app.use('/api/auth', authRouter);
 app.use('/api/wishlist', wishlistRouter);
 app.use('/api/recommendations', recRouter);

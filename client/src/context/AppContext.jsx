@@ -11,6 +11,8 @@ export const AppProvider = ({ children }) => {
 
   // in-memory token (preferred)
   const [token, setToken] = useState(null);
+  const [userToken, setUserToken] = useState(true);
+
   // keep localStorage compatibility for your existing flow
   const [persistToken, setPersistToken] = useState(() => localStorage.getItem("token"));
 
@@ -61,7 +63,7 @@ export const AppProvider = ({ children }) => {
 
 
   // --- AUTH helpers ---
-  const login = async (email, password) => {
+  const userLogin = async (email, password) => {
     try {
       const { data } = await axios.post("/api/auth/login", { email, password });
       const newToken = data?.accessToken;
@@ -79,7 +81,7 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  const signup = async (name, email, password) => {
+  const userSignup = async (name, email, password) => {
     try {
       const { data } = await axios.post("/api/auth/signup", { name, email, password });
       const newToken = data?.accessToken;
@@ -97,7 +99,7 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  const logout = async () => {
+  const userLogout = async () => {
     try {
       await axios.post("/api/auth/logout");
     } catch (e) {
@@ -257,6 +259,9 @@ export const AppProvider = ({ children }) => {
     // recommendations
     recommendations,
     getRecommendations,
+
+    userToken,
+    setUserToken
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
