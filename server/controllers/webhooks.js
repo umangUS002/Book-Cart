@@ -2,26 +2,26 @@ import { Webhook } from "svix";
 import User from "../models/User.js";
 
 // API Controller Function to Manage Clerk User with Database
-const clerkWebhooks = async(req,res) => {
+const clerkWebhooks = async (req, res) => {
     try {
-               
+
         // Create a svix instance with clerk webhook secret
         const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
 
 
         // Verifying Headers 
-        await whook.verify(JSON.stringify(req.body),{
+        const evt = whook.verify(req.body, {
             "svix-id": req.headers["svix-id"],
             "svix-timestamp": req.headers["svix-timestamp"],
-            "svix-signature": req.headers["svix-signature"]
-        })
+            "svix-signature": req.headers["svix-signature"],
+        });
 
-        // Getting data from request body
-        const { data, type } = req.body
+        const { data, type } = evt;
+
 
         // Switch case for different events
         switch (type) {
-            case 'user.created':{
+            case 'user.created': {
 
                 const userData = {
                     _id: data.id,
@@ -33,7 +33,7 @@ const clerkWebhooks = async(req,res) => {
                 break;
             }
 
-            case 'user.updated':{
+            case 'user.updated': {
 
                 const userData = {
                     email: data.email_addresses[0].email_address,
@@ -44,21 +44,21 @@ const clerkWebhooks = async(req,res) => {
                 break;
             }
 
-            case 'user.deleted':{
+            case 'user.deleted': {
                 await User.findByIdAndDelete(data.id);
                 res.json({})
                 break;
             }
-            
+
             default:
-            break;
-                
+                break;
+
         }
 
     } catch (error) {
         console.log(error.message);
-        res.json({sucess: false, message: 'Webhooks Error'})
-        
+        res.json({ sucess: false, message: 'Webhooks Error' })
+
     }
 }
 
