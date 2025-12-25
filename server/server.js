@@ -23,10 +23,9 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
 app.use(express.json());
 app.use(clerkMiddleware());
-
-
 
 //Routes
 app.get('/',(req,res)=> res.send("API is working"));
