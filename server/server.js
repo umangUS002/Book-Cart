@@ -19,7 +19,7 @@ app.use(cors());
 
 app.post(
   '/webhooks',
-  express.raw({ type: "*/*" }),
+  express.raw({ type: 'application/json' }),
   clerkWebhooks
 );
 
