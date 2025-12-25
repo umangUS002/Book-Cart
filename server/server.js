@@ -17,13 +17,18 @@ await connectDB();
 // Middlewares
 app.use(cors());
 
+app.post(
+  '/webhooks',
+  express.raw({ type: 'application/json' }),
+  clerkWebhooks
+);
+
 app.use(express.json());
 app.use(clerkMiddleware());
 
 //Routes
 app.get('/',(req,res)=> res.send("API is working"));
 
-app.post('/webhooks', clerkWebhooks);
 
 app.use('/api/book', bookRouter);
 app.use('/api/admin', adminRouter);
