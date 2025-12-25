@@ -15,14 +15,7 @@ const app = express();
 await connectDB();
 
 // Middlewares
-app.use(
-  cors({
-    origin: process.env.CLIENT_ORIGIN, // React dev server
-    credentials: true,               // ALLOW cookies
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+app.use(cors());
 
 app.use(express.json());
 app.use(clerkMiddleware());
