@@ -160,22 +160,11 @@ axios.defaults.withCredentials = true;
 
   // --- WISHLIST ---
   const getWishlist = async () => {
-    try {
-      const { data } = await axios.get("/api/wishlist");
+  const { data } = await axios.get("/api/wishlist");
+  const ids = data.map(item => item.bookId._id || item.bookId);
+  setWishlist(ids);
+};
 
-      // normalize → ONLY bookIds
-      const ids = Array.isArray(data)
-        ? data.map(w => w.bookId?._id || w.bookId)
-        : [];
-
-      setWishlist(ids);
-      return ids;
-    } catch (err) {
-      toast.error(err?.response?.data?.message || err.message);
-      setWishlist([]);
-      return [];
-    }
-  };
 
 
   const addToWishlist = async (bookId) => {
@@ -229,11 +218,6 @@ axios.defaults.withCredentials = true;
   // --- INIT / EFFECTS ---
   useEffect(() => {
     fetchBooks();
-    const token = localStorage.getItem('token')
-    if (token) {
-      setToken(token);
-      axios.defaults.headers.common['Authorization'] = `${token}`;
-    }
     getWishlist();
   }, [])
 

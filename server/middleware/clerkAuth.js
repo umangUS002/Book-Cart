@@ -1,12 +1,12 @@
 import { getAuth } from "@clerk/express";
 
 export default function clerkAuth(req, res, next) {
-  const { userId } = getAuth(req);
+  const auth = getAuth(req);
 
-  if (!userId) {
+  if (!auth?.userId) {
     return res.status(401).json({ message: "Unauthorized (Clerk)" });
   }
 
-  req.user = { id: userId }; // Clerk userId (string)
+  req.user = { id: auth.userId }; // 👈 STRING clerk userId
   next();
 }
