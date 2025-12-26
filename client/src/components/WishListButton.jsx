@@ -1,8 +1,6 @@
-import { useState } from "react";
-import { useAppContext } from "../context/AppContext";
-
 export default function WishlistButton({ bookId }) {
-  const { userToken, axios, wishlist, setWishlist } = useAppContext();
+  const { isSignedIn } = useUser();      // ✅ Clerk auth
+  const { axios, wishlist, setWishlist } = useAppContext();
   const [loading, setLoading] = useState(false);
 
   const added = wishlist?.includes(bookId);
@@ -11,7 +9,11 @@ export default function WishlistButton({ bookId }) {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!userToken) return alert("Login first");
+    if (!isSignedIn) {
+      alert("Please sign in first");
+      return;
+    }
+
     if (loading) return;
 
     try {

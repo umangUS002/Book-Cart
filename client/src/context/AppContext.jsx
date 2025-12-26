@@ -11,7 +11,6 @@ export const AppProvider = ({ children }) => {
 
   // in-memory token (preferred)
   const [token, setToken] = useState(null);
-  const [userToken, setUserToken] = useState(true);
 
   // keep localStorage compatibility for your existing flow
   const [persistToken, setPersistToken] = useState(() => localStorage.getItem("token"));
@@ -254,8 +253,7 @@ axios.defaults.withCredentials = true;
     recommendations,
     getRecommendations,
 
-    userToken,
-    setUserToken
+
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
