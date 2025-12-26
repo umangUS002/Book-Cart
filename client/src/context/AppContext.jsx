@@ -25,7 +25,6 @@ export const AppProvider = ({ children }) => {
   // Create axios instance that sends cookies (refresh token)
   const API_BASE = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
   axios.defaults.baseURL = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
-  axios.defaults.withCredentials = true; // 🔥 REQUIRED FOR CLERK
 
 
   // const refreshApi = axios.create({

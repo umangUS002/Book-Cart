@@ -17,14 +17,7 @@ await connectDB();
 // Middlewares
 app.set("trust proxy", 1); // 🔥 REQUIRED even locally (important)
 
-app.use(cors({
-  origin: [
-    "http://localhost:5173",          // Vite dev
-    "http://localhost:3000",          // if needed
-    "https://book-cart-eosin.vercel.app" // prod
-  ],
-  credentials: true
-}));
+app.use(cors());
 
 // ❗ Clerk MUST be BEFORE body parsers
 app.use(clerkMiddleware());
