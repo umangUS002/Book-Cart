@@ -25,7 +25,7 @@ export const AppProvider = ({ children }) => {
   // Create axios instance that sends cookies (refresh token)
   const API_BASE = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
   axios.defaults.baseURL = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
-
+axios.defaults.withCredentials = true;
 
   // const refreshApi = axios.create({
   //   baseURL: API_BASE,

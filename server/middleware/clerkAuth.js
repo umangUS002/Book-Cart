@@ -1,26 +1,12 @@
-import { verifyToken } from "@clerk/backend";
+import { getAuth } from "@clerk/express";
 
-export default async function clerkAuth(req, res, next) {
-  try {
-    const authHeader = req.headers.authorization;
+export default function clerkAuth(req, res, next) {
+  const { userId } = getAuth(req);
 
-    if (!authHeader?.startsWith("Bearer ")) {
-      return res.status(401).json({ message: "Missing Clerk token" });
-    }
-
-    const token = authHeader.split(" ")[1];
-
-    const payload = await verifyToken(token, {
-      secretKey: process.env.CLERK_SECRET_KEY,
-    });
-
-    req.user = {
-      id: payload.sub, // Clerk userId
-      provider: "clerk",
-    };
-
-    next();
-  } catch (err) {
-    return res.status(401).json({ message: "Invalid Clerk token" });
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized (Clerk)" });
   }
+
+  req.user = { id: userId }; // Clerk userId (string)
+  next();
 }
