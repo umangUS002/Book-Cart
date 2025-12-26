@@ -21,7 +21,7 @@ function BookCard({ blog }) {
           {genre}
         </span>
         <div className='flex mt-4 px-3'>
-          <WishlistButton />
+          <WishlistButton bookId={_id}/>
         </div>
       </div>
 
