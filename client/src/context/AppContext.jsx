@@ -24,7 +24,9 @@ export const AppProvider = ({ children }) => {
 
   // Create axios instance that sends cookies (refresh token)
   const API_BASE = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
-  axios.defaults.baseURL = import.meta.env.VITE_BASE_URL
+  axios.defaults.baseURL = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+  axios.defaults.withCredentials = true; // 🔥 REQUIRED FOR CLERK
+
 
   // const refreshApi = axios.create({
   //   baseURL: API_BASE,
@@ -161,13 +163,21 @@ export const AppProvider = ({ children }) => {
   const getWishlist = async () => {
     try {
       const { data } = await axios.get("/api/wishlist");
-      setWishlist(Array.isArray(data) ? data : []);
-      return data;
+
+      // normalize → ONLY bookIds
+      const ids = Array.isArray(data)
+        ? data.map(w => w.bookId?._id || w.bookId)
+        : [];
+
+      setWishlist(ids);
+      return ids;
     } catch (err) {
       toast.error(err?.response?.data?.message || err.message);
+      setWishlist([]);
       return [];
     }
   };
+
 
   const addToWishlist = async (bookId) => {
     try {
@@ -218,14 +228,15 @@ export const AppProvider = ({ children }) => {
   };
 
   // --- INIT / EFFECTS ---
-  useEffect(()=>{
-        fetchBooks();
-        const token = localStorage.getItem('token')
-        if(token){
-            setToken(token);
-            axios.defaults.headers.common['Authorization'] = `${token}`;
-        }
-    },[])
+  useEffect(() => {
+    fetchBooks();
+    const token = localStorage.getItem('token')
+    if (token) {
+      setToken(token);
+      axios.defaults.headers.common['Authorization'] = `${token}`;
+    }
+    getWishlist();
+  }, [])
 
   const value = {
 

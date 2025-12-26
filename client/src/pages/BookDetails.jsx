@@ -67,12 +67,13 @@ function BlogDetails() {
   }, [id]);
 
   return data ? (
-    <div className='relative'>
+    <div className="min-h-screen flex flex-col relative">
       <img src={assets.gradient} className='absolute -top-50 -z-1 opacity-100' />
 
       <Navbar />
 
-      <div className='text-center mt-6 md:mt-10 text-gray-600'>
+      <div className='flex-1'>
+        <div className='text-center mt-6 md:mt-10 text-gray-600'>
         <h1 className='text-2xl sm:text-5xl font-semibold max-w-2xl mx-auto text-gray-800'>{data.title}</h1>
         <p className='inline-block py-1 px-4 rounded-full mb-6 border text-sm border-primary/35 bg-primary/5 font-medium text-primary mt-3'>{data.author}</p>
       </div>
@@ -144,7 +145,7 @@ function BlogDetails() {
         {/* Left: Comments Section */}
         <div className='w-full md:w-2/3'>
           <p className='font-semibold mb-4'>Comments ({comments.length})</p>
-          <div className='flex flex-col gap-4'>
+          <div className='comments-scroll flex flex-col gap-4 max-h-[50vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-primary/30'>
             {comments.map((item, index) => (
               <div key={index} className='relative bg-primary/5 border border-primary/10 p-4 rounded-md text-gray-700'>
                 <div className='flex items-center gap-2 mb-1'>
@@ -187,7 +188,6 @@ function BlogDetails() {
       </div>
 
       {/*...Similar Books...*/}
-      {/* ---------- Similar Books Section ---------- */}
       <div className="mt-24 mb-32 px-6 sm:px-16 xl:px-40">
         <h2 className="text-2xl font-semibold text-center mb-12">
           More Like This
@@ -216,7 +216,6 @@ function BlogDetails() {
         )}
       </div>
 
-
       {/*...Share Buttons...*/}
       <div className='my-24 mx-auto px-40 max-sm:px-5'>
         <p className='font-semibold my-4'>Share this article on Social Media</p>
@@ -226,6 +225,10 @@ function BlogDetails() {
           <img src={assets.googleplus_icon} alt='' width={50} />
         </div>
       </div>
+      </div>
+
+      
+
       <Footer />
     </div>
   ) : <Loader />

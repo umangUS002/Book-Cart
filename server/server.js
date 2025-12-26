@@ -15,10 +15,21 @@ const app = express();
 await connectDB();
 
 // Middlewares
-app.use(cors());
+app.set("trust proxy", 1); // 🔥 REQUIRED even locally (important)
+
+app.use(cors({
+  origin: [
+    "http://localhost:5173",          // Vite dev
+    "http://localhost:3000",          // if needed
+    "https://your-vercel-domain.vercel.app" // prod
+  ],
+  credentials: true
+}));
+
+// ❗ Clerk MUST be BEFORE body parsers
+app.use(clerkMiddleware());
 
 app.use(express.json());
-app.use(clerkMiddleware());
 
 app.post("/webhooks", clerkWebhooks);
 

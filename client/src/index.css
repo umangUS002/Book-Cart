@@ -9,10 +9,30 @@
   display: none;
 }
 
+/* Enable scrollbar ONLY for comments */
+.comments-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.comments-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(225, 29, 72, 0.5); /* primary */
+  border-radius: 10px;
+}
+
+.comments-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Firefox */
+.comments-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(225, 29, 72, 0.5) transparent;
+}
+
 @theme{
   --color-primary: 		#E11D48;
   	
 }
-* {
+/* * {
   overflow: visible !important;
-}
+} */
