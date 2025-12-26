@@ -21,7 +21,7 @@ app.use(cors({
   origin: [
     "http://localhost:5173",          // Vite dev
     "http://localhost:3000",          // if needed
-    "https://book-cart-eosin.vercel.app/" // prod
+    "https://book-cart-eosin.vercel.app" // prod
   ],
   credentials: true
 }));
