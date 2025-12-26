@@ -1,6 +1,10 @@
+import { useAuth } from "@clerk/clerk-react";
+import { useState } from "react";
+import { useAppContext } from "../context/AppContext";
+
 export default function WishlistButton({ bookId }) {
-  const { isSignedIn } = useUser();      // ✅ Clerk auth
   const { axios, wishlist, setWishlist } = useAppContext();
+  const { getToken, isSignedIn } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const added = wishlist?.includes(bookId);
@@ -10,7 +14,7 @@ export default function WishlistButton({ bookId }) {
     e.stopPropagation();
 
     if (!isSignedIn) {
-      alert("Please sign in first");
+      alert("Login first");
       return;
     }
 
@@ -19,11 +23,19 @@ export default function WishlistButton({ bookId }) {
     try {
       setLoading(true);
 
+      const clerkToken = await getToken();
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${clerkToken}`,
+        },
+      };
+
       if (!added) {
-        await axios.post("/api/wishlist", { bookId });
+        await axios.post("/api/wishlist", { bookId }, config);
         setWishlist(prev => [...prev, bookId]);
       } else {
-        await axios.delete(`/api/wishlist/${bookId}`);
+        await axios.delete(`/api/wishlist/${bookId}`, config);
         setWishlist(prev => prev.filter(id => id !== bookId));
       }
     } catch (err) {
