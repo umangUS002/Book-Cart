@@ -7,7 +7,7 @@ import Book from "../models/book.js";
  */
 export async function getRecommendationsForUser(req, res) {
   try {
-    const userId = req.user.id;
+    const userId = req.auth();
     if (process.env.REC_URL) {
       try {
         const resp = await axios.get(`${process.env.REC_URL}/recommendations/${userId}`);

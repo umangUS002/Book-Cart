@@ -186,7 +186,7 @@ def similar_books(book_id: str, k: int = 4):
 # -----------------------
 
 @app.get("/recommendations/{user_id}", response_model=List[BookResponse])
-def recommendations(user_id: str, k: int = 10):
+def recommendations(user_id: str, k: int = 8):
     interactions = list(interactions_col.find({"userId": user_id}))
 
     if interactions:
@@ -202,7 +202,7 @@ def recommendations(user_id: str, k: int = 10):
             top_idx = sims.argsort()[::-1][:k]
 
             return [{
-                "id": books_df.iloc[i]["id"],
+                "_id": books_df.iloc[i]["id"],
                 "title": books_df.iloc[i]["title"],
                 "author": books_df.iloc[i]["author"],
                 "genre": books_df.iloc[i]["genre"],
@@ -221,7 +221,7 @@ def recommendations(user_id: str, k: int = 10):
     top_idx = magnitudes.argsort()[::-1][:k]
 
     return [{
-        "id": books_df.iloc[i]["id"],
+        "_id": books_df.iloc[i]["id"],
         "title": books_df.iloc[i]["title"],
         "author": books_df.iloc[i]["author"],
         "genre": books_df.iloc[i]["genre"],

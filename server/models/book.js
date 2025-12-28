@@ -16,6 +16,6 @@ const bookSchema = new mongoose.Schema({
     isPublished: {type: Boolean, required: true},
 }, {timestamps: true});
 
-const Book = mongoose.model('book', bookSchema);
+const Book = mongoose.models.Book || mongoose.model("Book", bookSchema)
 
 export default Book;

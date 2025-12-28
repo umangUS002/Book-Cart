@@ -19,7 +19,7 @@ function Navbar() {
       <div className='flex gap-2'>
         {user
           ? (<div className='flex items-center gap-3'>
-            <Link to={'/user'}>My Place</Link>
+            <Link to={'/user'}><span className='text-primary'>My Place</span></Link>
             <p className='max-sm:hidden'>|</p>
             <p className='max-sm:hidden'>Hi, {user.firstName + " " + user.lastName}</p>
             <UserButton />

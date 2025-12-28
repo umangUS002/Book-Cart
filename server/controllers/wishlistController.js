@@ -1,14 +1,20 @@
 import Wishlist from "../models/Wishlist.js";
 import Interaction from "../models/Interaction.js";
-
 /**
  * GET /api/wishlist
  * return user's wishlist (populated with book)
  */
 export async function getWishlist(req, res) {
   try {
-    const userId = req.user.id;
-    const list = await Wishlist.find({ userId }).populate("bookId");
+    const { userId } = req.auth();
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const list = await Wishlist
+      .find({ userId })
+      .populate("bookId");
+
     return res.json(list);
   } catch (err) {
     console.error("getWishlist err:", err);
@@ -16,13 +22,14 @@ export async function getWishlist(req, res) {
   }
 }
 
+
 /**
  * POST /api/wishlist  { bookId }
  * add entry (idempotent)
  */
 export async function addToWishlist(req, res) {
   try {
-    const userId = req.user.id;
+    const { userId } = req.auth();
     const { bookId } = req.body;
     if (!bookId) return res.status(400).json({ message: "Missing bookId" });
 
@@ -48,7 +55,7 @@ export async function addToWishlist(req, res) {
  */
 export async function removeFromWishlist(req, res) {
   try {
-    const userId = req.user.id;
+    const { userId } = req.auth();
     const { bookId } = req.params;
     await Wishlist.deleteOne({ userId, bookId });
     return res.json({ ok: true });

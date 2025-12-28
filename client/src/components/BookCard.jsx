@@ -6,12 +6,28 @@ import WishlistButton from './WishListButton'
 function BookCard({ blog }) {
   if (!blog) return null
 
-  const { title, description, genre, image, _id, author, rating } = blog
+  // ✅ normalize ID (CRITICAL)
+  const bookId = blog._id || blog.id
+
+  if (!bookId) {
+    console.error("Invalid book object:", blog)
+    return null
+  }
+
+  const {
+    title,
+    description,
+    genre,
+    image,
+    author,
+    rating
+  } = blog
+
   const navigate = useNavigate()
 
   return (
     <div
-      onClick={() => navigate(`/book/${_id}`)}
+      onClick={() => navigate(`/book/${bookId}`)}
       className='w-full max-sm:mb-12 rounded-lg overflow-hidden shadow hover:scale-102 hover:shadow-primary/25 duration-300 cursor-pointer'
     >
       <img src={image} alt={title} className='aspect-[2/3]' />
@@ -21,7 +37,7 @@ function BookCard({ blog }) {
           {genre}
         </span>
         <div className='flex mt-4 px-3'>
-          <WishlistButton bookId={_id}/>
+          <WishlistButton bookId={bookId} />
         </div>
       </div>
 
@@ -34,24 +50,17 @@ function BookCard({ blog }) {
           {author}
         </p>
 
-        <p
-          className='mb-3 text-xs text-gray-600'
-          dangerouslySetInnerHTML={{ __html: description.slice(0, 50) }}
-        />
+        <p className='mb-3 text-xs text-gray-600'>
+          {description?.slice(0, 50) || "No description available"}
+        </p>
 
-        {/* ⭐ RATING SECTION (FIXED) */}
         <div className='flex items-center gap-2'>
-          {rating === null || rating === undefined ? (
+          {rating == null ? (
             <span className='text-xs text-gray-400'>
               No ratings yet
             </span>
           ) : (
-            <>
-              <StarRating rating={rating} />
-              {/* <span className='text-xs text-gray-600'>
-                {rating.toFixed(1)}
-              </span> */}
-            </>
+            <StarRating rating={rating} />
           )}
         </div>
       </div>

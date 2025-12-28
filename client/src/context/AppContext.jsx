@@ -3,11 +3,15 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { useAuth, useUser } from '@clerk/clerk-react'
 
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
   const navigate = useNavigate();
+
+  const { user } = useUser()
+  const { getToken } = useAuth()
 
   // in-memory token (preferred)
   const [token, setToken] = useState(null);
@@ -21,104 +25,13 @@ export const AppProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
 
+  const [wishlistBooks, setWishlistBooks] = useState([]);
+
   // Create axios instance that sends cookies (refresh token)
   const API_BASE = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
   axios.defaults.baseURL = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
-axios.defaults.withCredentials = true;
+  axios.defaults.withCredentials = true;
 
-  // const refreshApi = axios.create({
-  //   baseURL: API_BASE,
-  //   withCredentials: true,
-  // });
-
-  // Request interceptor:
-  // - attach Authorization if we have in-memory token
-  // - otherwise, try to refresh using refresh cookie and set token
-  // api.interceptors.request.use(
-  //   async (config) => {
-  //     // Attach token if present
-  //     if (token) {
-  //       config.headers = config.headers || {};
-  //       config.headers.Authorization = `Bearer ${token}`;
-  //       return config;
-  //     }
-
-  //     // Try refresh ONLY ONCE using refreshApi (no interceptor)
-  //     try {
-  //       const resp = await refreshApi.post("/api/auth/refresh");
-  //       if (resp?.data?.accessToken) {
-  //         setToken(resp.data.accessToken);
-  //         localStorage.setItem("token", resp.data.accessToken);
-  //         config.headers = config.headers || {};
-  //         config.headers.Authorization = `Bearer ${resp.data.accessToken}`;
-  //       }
-  //     } catch (err) {
-  //       // refresh failed → continue without token
-  //     }
-
-  //     return config;
-  //   },
-  //   (error) => Promise.reject(error)
-  // );
-
-
-  // --- AUTH helpers ---
-  const userLogin = async (email, password) => {
-    try {
-      const { data } = await axios.post("/api/auth/login", { email, password });
-      const newToken = data?.accessToken;
-      if (newToken) {
-        setToken(newToken);
-        localStorage.setItem("token", newToken);
-        setPersistToken(newToken);
-      }
-      setUserFromPayload(data?.user);
-      toast.success("Logged in");
-      return data;
-    } catch (err) {
-      toast.error(err?.response?.data?.message || err.message);
-      throw err;
-    }
-  };
-
-  const userSignup = async (name, email, password) => {
-    try {
-      const { data } = await axios.post("/api/auth/signup", { name, email, password });
-      const newToken = data?.accessToken;
-      if (newToken) {
-        setToken(newToken);
-        localStorage.setItem("token", newToken);
-        setPersistToken(newToken);
-      }
-      setUserFromPayload(data?.user);
-      toast.success("Account created");
-      return data;
-    } catch (err) {
-      toast.error(err?.response?.data?.message || err.message);
-      throw err;
-    }
-  };
-
-  const userLogout = async () => {
-    try {
-      await axios.post("/api/auth/logout");
-    } catch (e) {
-      // ignore network errors on logout
-    } finally {
-      setToken(null);
-      setPersistToken(null);
-      localStorage.removeItem("token");
-      // remove Authorization default header if you had set it elsewhere
-      toast.success("Logged out");
-      navigate("/login");
-    }
-  };
-
-  // optional helper to set user in your app (if needed)
-  const setUserFromPayload = (user) => {
-    // if you want to store user info in context, add a state for it and set here
-    // setUser(user)
-  };
 
   // --- BOOKS / SIMILAR ---
   const fetchBooks = async () => {
@@ -159,12 +72,20 @@ axios.defaults.withCredentials = true;
 
   // --- WISHLIST ---
   const getWishlist = async () => {
-  const { data } = await axios.get("/api/wishlist");
-  const ids = data.map(item => item.bookId._id || item.bookId);
-  setWishlist(ids);
-};
+    try {
+      const token = await getToken();
+      if (!token) return;
 
+      const { data } = await axios.get("/api/wishlist", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
+      const ids = data.map(item => item.bookId?._id || item.bookId);
+      setWishlist(ids);
+    } catch (err) {
+      toast.error("Failed to load wishlist");
+    }
+  };
 
   const addToWishlist = async (bookId) => {
     try {
@@ -205,7 +126,7 @@ axios.defaults.withCredentials = true;
   // --- RECOMMENDATIONS ---
   const getRecommendations = async () => {
     try {
-      const { data } = await axios.get(`/api/recommendations`);
+      const { data } = await axios.get("/api/recommendations");
       setRecommendations(Array.isArray(data) ? data : []);
       return data;
     } catch (err) {
@@ -214,10 +135,32 @@ axios.defaults.withCredentials = true;
     }
   };
 
+  useEffect(() => {
+    if (!wishlist?.length) {
+      setWishlistBooks([]);
+      return;
+    }
+
+    const fetchWishlistBooks = async () => {
+      try {
+        const { data } = await axios.post("/api/book/by-ids", {
+          ids: wishlist
+        });
+
+        setWishlistBooks(data);
+      } catch (err) {
+        toast.error("Failed to load wishlist books");
+      }
+    };
+
+    fetchWishlistBooks();
+  }, [wishlist]);
+
   // --- INIT / EFFECTS ---
   useEffect(() => {
     fetchBooks();
     getWishlist();
+    getRecommendations();
   }, [])
 
   const value = {
@@ -242,6 +185,8 @@ axios.defaults.withCredentials = true;
 
     // wishlist
     wishlist,
+    wishlistBooks,
+    setWishlist,
     getWishlist,
     addToWishlist,
     removeFromWishlist,
