@@ -131,7 +131,7 @@ function Header() {
         </div>
       </div>
 
-      <img src={assets.gradient} className='absolute -top-50 -z-1 opacity-50' />
+      <img src={assets.gradient} className='absolute max-sm:top-10  max-sm:w-[600px] -top-50 -z-1 opacity-60 max-sm:opacity-80' />
     </div>
 
     // <section className="bg-[url('https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/hero/gradient-bg-with-grid.png')] bg-cover bg-center bg-no-repeat text-slate-800 text-sm min-h-screen pt-25">
