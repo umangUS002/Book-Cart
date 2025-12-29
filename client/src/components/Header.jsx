@@ -60,8 +60,8 @@ function Header() {
           <img src={assets.star_icon1} className='-ml-3 w-5 max-sm:w-3' alt='' />
         </div>
 
-        <h1 className='text-3xl sm:text-6xl max-sm:mt-1  font-semibold sm:leading-16 text-gray-700'>
-          Your own <span className='text-primary'>Bookstore</span> <br /> Read. Escape. Repeat..
+        <h1 className='text-4xl sm:text-6xl max-sm:mt-1  font-semibold sm:leading-16 text-gray-700'>
+          Your own <span className='text-primary text-6xl'>Bookstore</span> <br /> Read. Escape. Repeat..
         </h1>
         <p className='my-6 max-sm:my-4 max-sm:mb-10 sm:my-8 max-w-2xl m-auto max-sm:text-xs text-gray-500'>
           This is your place to explore new worlds, dive into gripping stories, and discover books that speak to you.
