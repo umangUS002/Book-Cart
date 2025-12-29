@@ -16,6 +16,8 @@ import Wishlist from './pages/user/Wishlist';
 
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 
+import { Analytics } from "@vercel/analytics/react"
+
 function App() {
 
   const { token } = useAppContext();
@@ -53,6 +55,7 @@ function App() {
         </Route>
 
       </Routes>
+      <Analytics/>
     </div>
   )
 }
