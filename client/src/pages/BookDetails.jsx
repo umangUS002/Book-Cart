@@ -129,9 +129,15 @@ function BlogDetails() {
               ))}
             </div>
 
-            <div className="flex items-center gap-2 mt-4">
-              <StarRating rating={data.rating} />
-            </div>
+            <div className='flex items-center gap-2'>
+          {data.rating == null ? (
+            <span className='text-xs text-gray-400'>
+              No ratings yet
+            </span>
+          ) : (
+            <StarRating rating={data.rating} />
+          )}
+        </div>
 
           </div>
 
@@ -144,7 +150,7 @@ function BlogDetails() {
 
         {/* Left: Comments Section */}
         <div className='w-full md:w-2/3'>
-          <p className='font-semibold mb-4'>Comments ({comments.length})</p>
+          <p className='font-semibold mb-4 sm:text-xl'>Comments ({comments.length})</p>
           <div className='comments-scroll flex flex-col gap-4 max-h-[50vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-primary/30'>
             {comments.map((item, index) => (
               <div key={index} className='relative bg-primary/5 border border-primary/10 p-4 rounded-md text-gray-700'>
@@ -161,7 +167,8 @@ function BlogDetails() {
 
         {/* Right: Add Comment Form */}
         <div className='w-full md:w-1/3 mt-20 md:mt-0 '>
-          <p className='font-semibold mb-4'>Add your comment</p>
+          <p className='font-semibold sm:text-xl mb-0'>Add your comment</p>
+          <p className='mb-4 text-sm'> (Rating is automatically updated based on comment sentiment.)</p>
           <form onSubmit={addComment} className='flex flex-col gap-4'>
             <input
               onChange={(e) => setName(e.target.value)}

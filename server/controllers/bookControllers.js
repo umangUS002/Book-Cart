@@ -3,6 +3,8 @@ import imagekit from "../configs/imageKit.js";
 import Book from "../models/book.js";
 import Comment from "../models/Comments.js";
 import main from "../configs/gemini.js";
+import Subscriber from "../models/Subscriber.js";
+import { sendNewBookEmail } from "../utils/sendEmail.js";
 
 export const addBook = async (req, res) => {
     try {
@@ -35,14 +37,14 @@ export const addBook = async (req, res) => {
 
         const image = optimizedImageUrl;
 
-        await Book.create({ image, title, author, description, genre, publishedDate, isbn, publisher, pages, language, rating, tags, isPublished })
+        const bookC = await Book.create({ image, title, author, description, genre, publishedDate, isbn, publisher, pages, language, rating, tags, isPublished })
 
         // Fetch all subscribers
         const subscribers = await Subscriber.find({});
         const emails = subscribers.map(s => s.email);
 
         if (emails.length > 0) {
-            await sendNewBookEmail(emails, book);
+            await sendNewBookEmail(emails, bookC);
         }
 
         res.json({ success: true, message: "Book added successfully" })

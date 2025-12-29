@@ -1,7 +1,10 @@
 import React, { useState } from "react";
+import { useAppContext } from "../context/AppContext";
+import toast from 'react-hot-toast';
 
 function NewsLetter() {
   const [email, setEmail] = useState("");
+  const {axios} = useAppContext();
 
   const handleSubscribe = async (e) => {
     e.preventDefault(); // ✅ prevent page reload
@@ -9,18 +12,15 @@ function NewsLetter() {
     if (!email) return;
 
     try {
-      const res = await fetch(`${API_URL}/api/subscribe`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const res = await axios.post("/api/subscriptions/subscribe", { email });
 
-      const data = await res.json();
-      console.log(data);
+      console.log(res.data);
 
       setEmail(""); // clear input
+      toast.success(res.data.message);
     } catch (err) {
       console.error("Subscription failed", err);
+      toast.error(res.data.message);
     }
   };
 

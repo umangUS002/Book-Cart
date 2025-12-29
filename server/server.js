@@ -9,6 +9,7 @@ import wishlistRouter from "./routes/wishlistRoutes.js";
 import recRouter from "./routes/recommendationRoutes.js";
 import clerkWebhooks from "./controllers/webhooks.js";
 import { clerkMiddleware } from '@clerk/express';
+import subscriberRouter from "./routes/subscriberRoutes.js";
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use('/api/admin', adminRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/wishlist', wishlistRouter);
 app.use('/api/recommendations', recRouter);
+app.use('/api/subscriptions', subscriberRouter);
 
 const PORT = process.env.PORT || 3000;
 
