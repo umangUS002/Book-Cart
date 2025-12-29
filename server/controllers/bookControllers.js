@@ -4,14 +4,14 @@ import Book from "../models/book.js";
 import Comment from "../models/Comments.js";
 import main from "../configs/gemini.js";
 
-export const addBook = async(req,res) => {
+export const addBook = async (req, res) => {
     try {
-        const {title, author, description, genre, publishedDate, isbn, publisher, pages, language, rating, tags, isPublished} = JSON.parse(req.body.book);
-        const imageFile  = req.file;
+        const { title, author, description, genre, publishedDate, isbn, publisher, pages, language, rating, tags, isPublished } = JSON.parse(req.body.book);
+        const imageFile = req.file;
 
         //Check if all fields are present
-        if(!title || !author || !genre || !publishedDate || !isbn || !publisher  || !language || !description || !imageFile){
-            return res.json({success: false, message: "Missing required fields."})
+        if (!title || !author || !genre || !publishedDate || !isbn || !publisher || !language || !description || !imageFile) {
+            return res.json({ success: false, message: "Missing required fields." })
         }
 
         const fileBuffer = fs.readFileSync(imageFile.path)
@@ -27,99 +27,107 @@ export const addBook = async(req,res) => {
         const optimizedImageUrl = imagekit.url({
             path: response.filePath,
             transformation: [
-                {quality: 'auto'},  // Auto compression
-                {format: 'webp'},   // Convert to modern format
-                {width: '1280'}      // Width resizing
+                { quality: 'auto' },  // Auto compression
+                { format: 'webp' },   // Convert to modern format
+                { width: '1280' }      // Width resizing
             ]
         })
 
         const image = optimizedImageUrl;
 
-        await Book.create({image, title, author, description, genre, publishedDate, isbn, publisher, pages, language, rating, tags, isPublished})
+        await Book.create({ image, title, author, description, genre, publishedDate, isbn, publisher, pages, language, rating, tags, isPublished })
 
-        res.json({success: true, message: "Book added successfully"})
+        // Fetch all subscribers
+        const subscribers = await Subscriber.find({});
+        const emails = subscribers.map(s => s.email);
+
+        if (emails.length > 0) {
+            await sendNewBookEmail(emails, book);
+        }
+
+        res.json({ success: true, message: "Book added successfully" })
 
     } catch (error) {
-        res.json({success: false, message: error.message})
+        res.json({ success: false, message: error.message })
     }
 }
 
 export const getAllBooks = async (req, res) => {
     try {
-        const books = await Book.find({isPublished: true})
-        res.json({success: true, books})
+        const books = await Book.find({ isPublished: true })
+        res.json({ success: true, books })
     } catch (error) {
-        res.json({success: false, message: error.message})
+        res.json({ success: false, message: error.message })
     }
 }
 
-export const getBookById = async(req,res) => {
+export const getBookById = async (req, res) => {
     try {
         const { bookId } = req.params;
         const book = await Book.findById(bookId)
-        if(!book){
-            res.json({success: false, message: "Book not found"});
+        if (!book) {
+            res.json({ success: false, message: "Book not found" });
         }
-        res.json({success: true, book})
+        res.json({ success: true, book })
     } catch (error) {
-        res.json({success: false, message: error.message})    
+        res.json({ success: false, message: error.message })
     }
 }
 
-export const deleteBookById = async(req,res) => {
+export const deleteBookById = async (req, res) => {
     try {
         const { id } = req.body;
         await Book.findByIdAndDelete(id);
 
         // Delete all comments associated with the book
-        await Comment.deleteMany({book: id});
+        await Comment.deleteMany({ book: id });
 
-        res.json({success: true, message: "Book deleted successfully"})
+        res.json({ success: true, message: "Book deleted successfully" })
 
     } catch (error) {
-        res.json({success: false, message: error.message})    
+        res.json({ success: false, message: error.message })
     }
 }
 
-export const togglePublish = async(req,res) => {
+export const togglePublish = async (req, res) => {
     try {
         const { id } = req.body;
         const book = await Book.findById(id);
         book.isPublished = !book.isPublished;
         await book.save();
-        res.json({success: true, message: "Book status updated"})
+        res.json({ success: true, message: "Book status updated" })
     } catch (error) {
-        res.json({success: false, message: error.message})    
+        res.json({ success: false, message: error.message })
     }
 }
 
-export const addComment = async(req, res) => {
+export const addComment = async (req, res) => {
     try {
-        const {book, name, content} = req.body;
-        await Comment.create({book, name, content});
-        res.json({success: true, message: "Comment added for review"})
+        const { book, name, content } = req.body;
+        await Comment.create({ book, name, content });
+        res.json({ success: true, message: "Comment added for review" })
     } catch (error) {
-        res.json({success: false, message: error.message})    
-    }
-}  
-
-export const getBookComment = async(req,res) => {
-    try {
-        const {bookId} = req.body;
-        const comments = await Comment.find({book: bookId, isApproved: true}).sort({createdAt: -1});
-        res.json({success: true, comments})
-    } catch (error) {
-        res.json({success: false, message: error.message})    
+        res.json({ success: false, message: error.message })
     }
 }
 
-export const generateContent = async(req,res) => {
+export const getBookComment = async (req, res) => {
     try {
-        const {prompt} = req.body;
+        const { bookId } = req.body;
+        const comments = await Comment.find({ book: bookId, isApproved: true }).sort({ createdAt: -1 });
+        res.json({ success: true, comments })
+    } catch (error) {
+        res.json({ success: false, message: error.message })
+    }
+}
+
+export const generateContent = async (req, res) => {
+    try {
+        const { prompt } = req.body;
         const content = await main(prompt + 'Generate a 120-130 words description for this book in simple text format without showing any prompts, to use directly.');
-        res.json({success: true, content});
+        res.json({ success: true, content });
     } catch (error) {
-        res.json({success: false, message: error.message});
+        res.json({ success: false, message: error.message });
     }
 }
 
