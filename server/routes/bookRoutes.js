@@ -2,7 +2,7 @@ import express from "express";
 import { addBook, addComment, deleteBookById, generateContent, getAllBooks, getBookById, getBookComment, getSimilarBooks, togglePublish } from "../controllers/bookControllers.js";
 import upload from "../middleware/multer.js";
 import auth from "../middleware/auth.js";
-import Book from "../models/Book.js";
+import Book from "../models/book.js";
 
 const bookRouter = express.Router();
 

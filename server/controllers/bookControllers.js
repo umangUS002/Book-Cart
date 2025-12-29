@@ -1,6 +1,6 @@
 import fs from "fs";
 import imagekit from "../configs/imageKit.js";
-import Book from "../models/Book.js";
+import Book from "../models/book.js";
 import Comment from "../models/Comments.js";
 import main from "../configs/gemini.js";
 
