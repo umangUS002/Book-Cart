@@ -116,7 +116,7 @@ export const getBookComment = async(req,res) => {
 export const generateContent = async(req,res) => {
     try {
         const {prompt} = req.body;
-        const content = await main(prompt + 'Generate a description for this book in simple text format');
+        const content = await main(prompt + 'Generate a 120-130 words description for this book in simple text format without showing any prompts, to use directly.');
         res.json({success: true, content});
     } catch (error) {
         res.json({success: false, message: error.message});

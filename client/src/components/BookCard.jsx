@@ -33,7 +33,7 @@ function BookCard({ blog }) {
       <img src={image} alt={title} className='aspect-[2/3]' />
 
       <div className='flex justify-between'>
-        <span className='ml-5 max-sm:ml-1 mt-4 px-3 py-1 inline-block bg-primary/20 rounded-full text-primary text-xs'>
+        <span className='ml-5 max-sm:ml-1 mt-4 px-3 py-2 inline-block bg-primary/20 rounded-full text-primary text-xs'>
           {genre}
         </span>
         <div className='flex mt-4 px-3'>
@@ -50,8 +50,8 @@ function BookCard({ blog }) {
           {author}
         </p>
 
-        <p className='mb-3 text-xs text-gray-600'>
-          {description?.slice(0, 50) || "No description available"}
+        <p className="mb-3 text-xs text-gray-600">
+          <p dangerouslySetInnerHTML={{ __html: description.slice(0, 80) }} />
         </p>
 
         <div className='flex items-center gap-2'>
