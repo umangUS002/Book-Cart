@@ -56,7 +56,7 @@ export const addBook = async (req, res) => {
 
 export const getAllBooks = async (req, res) => {
     try {
-        const books = await Book.find({ isPublished: true })
+        const books = await Book.find({ isPublished: true }).sort({ createdAt: -1 })
         res.json({ success: true, books })
     } catch (error) {
         res.json({ success: false, message: error.message })

@@ -186,7 +186,7 @@ function BlogDetails() {
             />
             <button
               type='submit'
-              className='bg-primary text-white rounded-md px-6 py-2 hover:scale-105 transition-transform'
+              className='bg-primary cursor-pointer text-white rounded-md px-6 py-2 hover:scale-105 transition-transform'
             >
               Submit
             </button>

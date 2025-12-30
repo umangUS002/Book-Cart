@@ -6,8 +6,8 @@ function Login() {
 
   const {axios, setToken} = useAppContext();
 
-  const [email, setEmail] = useState('umang1gb@gmail.com');
-  const [password, setPassword] = useState('umang123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleSubmit = async(e) => {
     e.preventDefault();
