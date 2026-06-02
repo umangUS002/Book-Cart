@@ -217,17 +217,25 @@ def recommendations(user_id: str, k: int = 8):
     # FALLBACK (POPULAR)
     # -----------------------
 
-    magnitudes = np.array(mat.sum(axis=1)).flatten()
-    top_idx = magnitudes.argsort()[::-1][:k]
+    # magnitudes = np.array(mat.sum(axis=1)).flatten()
+    # top_idx = magnitudes.argsort()[::-1][:k]
 
-    return [{
-        "_id": books_df.iloc[i]["id"],
-        "title": books_df.iloc[i]["title"],
-        "author": books_df.iloc[i]["author"],
-        "genre": books_df.iloc[i]["genre"],
-        "rating": float(books_df.iloc[i]["rating"])
-                  if books_df.iloc[i]["rating"] not in ["", None] else None,
-        "description": books_df.iloc[i]["description"],
-        "score": float(magnitudes[i]),
-        "image": books_df.iloc[i]["image"]
-    } for i in top_idx]
+    # return [{
+    #     "_id": books_df.iloc[i]["id"],
+    #     "title": books_df.iloc[i]["title"],
+    #     "author": books_df.iloc[i]["author"],
+    #     "genre": books_df.iloc[i]["genre"],
+    #     "rating": float(books_df.iloc[i]["rating"])
+    #               if books_df.iloc[i]["rating"] not in ["", None] else None,
+    #     "description": books_df.iloc[i]["description"],
+    #     "score": float(magnitudes[i]),
+    #     "image": books_df.iloc[i]["image"]
+    # } for i in top_idx]
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "app:app",
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 8002)),
+    )
